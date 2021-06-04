@@ -103,3 +103,7 @@ dist
 # TernJS port file
 .tern-port
 book/package-lock.json
+member/package-lock.json
+example/package-lock.json
+learn-mongoose/package-lock.json
+learn_express/package-lock.json
