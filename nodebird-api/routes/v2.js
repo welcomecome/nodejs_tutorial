@@ -1,20 +1,45 @@
 const express = require('express');
 const jwt = require('jsonwebtoken');
+const cors = require('cors');
+const url = require('url');
 
 const { verifyToken, apiLimiter } = require('./middlewares');
 const { Domain, User, Post, Hashtag } = require('../models');
 
 const router = express.Router();
 
-router.post('/token', apiLimiter, async (req, res) => {
+router.use(async (req, res, next) => {
+    const domain = await Domain.findOne({
+        where: { host: url.parse(req.get('origin')).host }
+    });
+    if (domain) {
+        cors({
+            origin: req.get('origin'),
+            credentials: true
+        })(req, res, next);
+    } else {
+        next();
+    }
+});
+
+// -----------------------------------------
+// 아래 두 코드는 같은 역할을 함
+// router.use(cors()); 
+
+// router.use((req, res, next) => {
+//     cors()(req, res, next);
+// });
+// -----------------------------------------
+
+router.post('/token', async (req, res) => {
     const { clientSecret } = req.body;
     try {
         const domain = await Domain.findOne({
             where: { clientSecret },
-            include: { 
+            include: {
                 model: User,
                 attribute: ['nick', 'id']
-             }
+            }
         });
         if (!domain) {
             return res.status(401).json({
@@ -26,7 +51,7 @@ router.post('/token', apiLimiter, async (req, res) => {
             id: domain.User.id,
             nick: domain.User.nick
         }, process.env.JWT_SECRET, {
-            expiresIn: '30m',
+            expiresIn: '30m', //1분
             issuer: 'nodebird'
         });
         return res.json({

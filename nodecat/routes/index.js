@@ -22,7 +22,7 @@ const request = async (req, api) => {
         }
         return err.response;
     }
-}
+};
 
 router.get('/mypost', async (req, res, next) => {
     try {
@@ -46,6 +46,10 @@ router.get('/search/:hashtag', async(req, res, next) => {
             next(err);
         }
     }
+});
+
+router.get('/', (req, res) => {
+    res.render('main', { key: process.env.CLINET_SECRET });
 });
 
 // router.get('/test', async (req, res, next) => {
