@@ -67,6 +67,8 @@ app.use((err, req, res, next) => {
     res.render('error');
 });
 
-app.listen(app.get('port'), () => {
-    console.log(app.get('port'));
-});
+// app.listen(app.get('port'), () => {
+//     console.log(app.get('port'));
+// });
+
+module.exports = app;
